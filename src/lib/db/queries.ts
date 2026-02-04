@@ -73,6 +73,25 @@ export async function getExpensesForGameNight(gameNightId: number) {
     .orderBy(desc(expenses.createdAt));
 }
 
+export async function getAllExpensesGrouped() {
+  const allExpenses = await db
+    .select()
+    .from(expenses)
+    .orderBy(desc(expenses.createdAt));
+
+  const map = new Map<number, typeof allExpenses>();
+  for (const expense of allExpenses) {
+    if (expense.gameNightId == null) continue;
+    const existing = map.get(expense.gameNightId);
+    if (existing) {
+      existing.push(expense);
+    } else {
+      map.set(expense.gameNightId, [expense]);
+    }
+  }
+  return map;
+}
+
 // ─── Ledger ──────────────────────────────────────────────────────────────────
 
 export async function getLedgerEntries(filters?: {
