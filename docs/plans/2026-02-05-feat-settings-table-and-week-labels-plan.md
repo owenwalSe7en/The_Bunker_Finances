@@ -87,12 +87,12 @@ In `getWeeklyPnL()`, compute the ISO week's Monday–Sunday date range and use t
 - [x] Remove `KAM_NIGHTLY_PAY` from `src/lib/constants.ts`
 - [x] Remove `KAM_NIGHTLY_PAY` import and deduction from `getGameNights()` net profit calc — `src/lib/db/queries.ts`
 - [x] Remove "Kam pay" display from `src/app/(protected)/game-nights/page.tsx`
-- [ ] New Settings page at `/settings` with edit capability — `src/app/(protected)/settings/page.tsx`
+- [x] New Settings page at `/settings` with edit capability — `src/app/(protected)/settings/page.tsx`
 - [x] Settings validation: `nightly_rent` must be numeric >= 0 — `src/lib/validations.ts`
-- [ ] Add Settings link to nav/sidebar
-- [ ] Idempotent backfill: insert rent expenses for existing game nights using `WHERE NOT EXISTS` guard
-- [ ] Backfill uses historical amount `330`, with description "Nightly rent (Kam) - backfilled"
-- [ ] Verify backfill: after running, every game night must have exactly one rent expense
+- [x] Add Settings link to nav/sidebar
+- [x] Idempotent backfill: insert rent expenses for existing game nights using `WHERE NOT EXISTS` guard
+- [x] Backfill uses historical amount `330`, with description "Nightly rent (Kam) - backfilled"
+- [x] Verify backfill: after running, every game night must have exactly one rent expense
 
 ### Date Range Week Labels
 - [ ] New helper `getISOWeekRange(dateStr)` returns `{ start: string, end: string }` — `src/lib/db/queries.ts`
