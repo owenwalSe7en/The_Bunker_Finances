@@ -1,4 +1,4 @@
-import { getDashboardStats, getWeeklyPnL } from "@/lib/db/queries";
+import { getDashboardStats, getWeeklyPnL, getCurrentWeekLabel } from "@/lib/db/queries";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PnLChart } from "@/components/dashboard/pnl-chart";
 
@@ -50,6 +50,9 @@ export default async function DashboardPage() {
               }`}
             >
               {formatCurrency(stats.thisWeekProfit)}
+            </p>
+            <p className="text-xs text-muted-foreground">
+              {getCurrentWeekLabel()}
             </p>
           </CardContent>
         </Card>

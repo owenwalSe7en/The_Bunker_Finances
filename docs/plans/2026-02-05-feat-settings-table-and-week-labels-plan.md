@@ -95,12 +95,12 @@ In `getWeeklyPnL()`, compute the ISO week's Monday–Sunday date range and use t
 - [x] Verify backfill: after running, every game night must have exactly one rent expense
 
 ### Date Range Week Labels
-- [ ] New helper `getISOWeekRange(dateStr)` returns `{ start: string, end: string }` — `src/lib/db/queries.ts`
-- [ ] New formatter `formatWeekLabel(start, end)` returns e.g., `"Jan 27 – Feb 2"` — `src/lib/db/queries.ts`
-- [ ] Week range helpers use `T12:00:00` pattern for timezone safety (matching existing `getISOWeek`)
-- [ ] `getWeeklyPnL()` uses date range labels instead of `W${week}` — `src/lib/db/queries.ts`
-- [ ] Dashboard "This Week" card shows date range subtitle — `src/app/(protected)/dashboard/page.tsx`
-- [ ] Chart x-axis labels angle at -45 degrees for readability — `src/components/dashboard/pnl-chart.tsx`
+- [x] New helper `getISOWeekRange(dateStr)` returns `{ start: string, end: string }` — `src/lib/db/queries.ts`
+- [x] New formatter `formatWeekLabel(start, end)` returns e.g., `"Jan 27 – Feb 2"` — `src/lib/db/queries.ts`
+- [x] Week range helpers use `T12:00:00` pattern for timezone safety (matching existing `getISOWeek`)
+- [x] `getWeeklyPnL()` uses date range labels instead of `W${week}` — `src/lib/db/queries.ts`
+- [x] Dashboard "This Week" card shows date range subtitle — `src/app/(protected)/dashboard/page.tsx`
+- [x] Chart x-axis labels angle at -45 degrees for readability — `src/components/dashboard/pnl-chart.tsx`
 
 ## Files to Modify
 

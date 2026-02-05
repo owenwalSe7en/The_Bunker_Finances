@@ -67,7 +67,10 @@ export function PnLChart({ data }: { data: WeekData[] }) {
             <XAxis
               dataKey="label"
               className="text-xs"
-              tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }}
+              tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 11 }}
+              angle={-45}
+              textAnchor="end"
+              height={60}
             />
             <YAxis
               tickFormatter={(v: number) => formatCurrency(v)}
