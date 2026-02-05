@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm update:*)",
+      "Bash(ls -la \"C:\\\\Users\\\\walla\\\\projects\\\\The_Bunker_Finances\\\\docs\"\" 2>&1 || echo \"docs directory not found \")",
+      "Bash(git checkout:*)",
+      "Bash(npx drizzle-kit push:*)",
+      "Bash(git add:*)"
+    ]
+  }
+}
