@@ -7,6 +7,7 @@ import {
   LayoutDashboard,
   BookOpen,
   DollarSign,
+  Settings,
   LogOut,
   Menu,
 } from "lucide-react";
@@ -27,6 +28,7 @@ const navItems = [
   { href: "/ledger", label: "The Books", icon: BookOpen },
   { href: "/payroll", label: "Payroll", icon: DollarSign },
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/settings", label: "Settings", icon: Settings },
 ];
 
 function NavLinks({

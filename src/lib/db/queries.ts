@@ -1,7 +1,6 @@
 import { db } from ".";
-import { gameNights, expenses, ledgerEntries, payrollEntries } from "./schema";
+import { gameNights, expenses, ledgerEntries, payrollEntries, appConfig } from "./schema";
 import { eq, desc, asc, sql, and, gte, lte, sum } from "drizzle-orm";
-import { KAM_NIGHTLY_PAY } from "@/lib/constants";
 
 // ─── Game Nights ─────────────────────────────────────────────────────────────
 
@@ -52,7 +51,7 @@ export async function getGameNights(filters?: {
       ),
       weekNumber: getISOWeek(night.date),
       expenseTotal,
-      netProfit: rake - expenseTotal - KAM_NIGHTLY_PAY,
+      netProfit: rake - expenseTotal,
     };
   });
 }
@@ -208,11 +207,12 @@ export async function getWeeklyPnL() {
     if (existing) {
       existing.profit += night.netProfit;
     } else {
+      const { start, end } = getISOWeekRange(night.date);
       weeklyMap.set(key, {
         week,
         year,
         profit: night.netProfit,
-        label: `W${week}`,
+        label: formatWeekLabel(start, end),
       });
     }
   }
@@ -237,6 +237,29 @@ export async function getWeeklyPnL() {
   );
 }
 
+// ─── App Config ─────────────────────────────────────────────────────────────
+
+export async function getAppConfig() {
+  const [config] = await db.select().from(appConfig).where(eq(appConfig.id, 1));
+  if (!config) {
+    const [newConfig] = await db
+      .insert(appConfig)
+      .values({ nightlyRent: "330" })
+      .returning();
+    return newConfig;
+  }
+  return config;
+}
+
+export async function updateAppConfig(nightlyRent: string) {
+  const [updated] = await db
+    .update(appConfig)
+    .set({ nightlyRent, updatedAt: new Date() })
+    .where(eq(appConfig.id, 1))
+    .returning();
+  return updated;
+}
+
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
 function getISOWeek(dateStr: string): number {
@@ -244,4 +267,41 @@ function getISOWeek(dateStr: string): number {
   d.setDate(d.getDate() + 4 - (d.getDay() || 7));
   const yearStart = new Date(d.getFullYear(), 0, 1);
   return Math.ceil(((d.getTime() - yearStart.getTime()) / 86400000 + 1) / 7);
+}
+
+/** Get the Monday–Sunday date range for the ISO week containing the given date. */
+function getISOWeekRange(dateStr: string): { start: Date; end: Date } {
+  const d = new Date(dateStr + "T12:00:00");
+  const day = d.getDay() || 7; // Convert Sunday=0 to 7
+  const monday = new Date(d);
+  monday.setDate(d.getDate() - day + 1);
+  const sunday = new Date(monday);
+  sunday.setDate(monday.getDate() + 6);
+  return { start: monday, end: sunday };
+}
+
+const MONTH_ABBR = [
+  "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+];
+
+/** Format a week range as "Jan 27 – Feb 2". */
+function formatWeekLabel(start: Date, end: Date): string {
+  const sMonth = MONTH_ABBR[start.getMonth()];
+  const eMonth = MONTH_ABBR[end.getMonth()];
+  const sDay = start.getDate();
+  const eDay = end.getDate();
+
+  if (sMonth === eMonth) {
+    return `${sMonth} ${sDay} – ${eDay}`;
+  }
+  return `${sMonth} ${sDay} – ${eMonth} ${eDay}`;
+}
+
+/** Get the current week's date range label for the dashboard. */
+export function getCurrentWeekLabel(): string {
+  const now = new Date();
+  const dateStr = now.toISOString().split("T")[0];
+  const { start, end } = getISOWeekRange(dateStr);
+  return formatWeekLabel(start, end);
 }

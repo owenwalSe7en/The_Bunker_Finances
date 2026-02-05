@@ -35,6 +35,7 @@ const CATEGORY_LABELS: Record<string, string> = {
   in_game_food: "Food & Drink",
   restock: "Restock",
   other: "Other",
+  rent: "Rent",
 };
 
 function formatCurrency(value: number): string {

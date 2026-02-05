@@ -11,8 +11,6 @@ import {
 import { GameNightRow } from "@/components/game-nights/game-night-detail";
 import { GameNightForm } from "@/components/game-nights/game-night-form";
 import { DeleteGameNightButton } from "@/components/game-nights/delete-game-night-button";
-import { KAM_NIGHTLY_PAY } from "@/lib/constants";
-
 function formatCurrency(value: number): string {
   return new Intl.NumberFormat("en-US", {
     style: "currency",
@@ -46,7 +44,6 @@ export default async function GameNightsPage({
           <h1 className="text-2xl font-bold tracking-tight">Game Nights</h1>
           <p className="text-sm text-muted-foreground">
             {nights.length} night{nights.length !== 1 ? "s" : ""} recorded
-            {" · "}Kam pay: {formatCurrency(KAM_NIGHTLY_PAY)}/night
           </p>
         </div>
         <GameNightForm mode="create" />

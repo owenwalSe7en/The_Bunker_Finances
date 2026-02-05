@@ -25,7 +25,7 @@ export const expenses = pgTable("expenses", {
   gameNightId: integer("game_night_id").references(() => gameNights.id, {
     onDelete: "cascade",
   }),
-  category: text("category").notNull(), // in_game_food | restock | other
+  category: text("category").notNull(), // in_game_food | restock | other | rent
   description: text("description"),
   amount: numeric("amount", { precision: 10, scale: 2 }).notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -55,6 +55,15 @@ export const payrollEntries = pgTable("payroll_entries", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
+export const appConfig = pgTable("app_config", {
+  id: serial("id").primaryKey(),
+  nightlyRent: numeric("nightly_rent", { precision: 10, scale: 2 })
+    .notNull()
+    .default("330"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
 // Type exports
 export type GameNight = typeof gameNights.$inferSelect;
 export type NewGameNight = typeof gameNights.$inferInsert;
@@ -64,3 +73,5 @@ export type LedgerEntry = typeof ledgerEntries.$inferSelect;
 export type NewLedgerEntry = typeof ledgerEntries.$inferInsert;
 export type PayrollEntry = typeof payrollEntries.$inferSelect;
 export type NewPayrollEntry = typeof payrollEntries.$inferInsert;
+export type AppConfig = typeof appConfig.$inferSelect;
+export type NewAppConfig = typeof appConfig.$inferInsert;
