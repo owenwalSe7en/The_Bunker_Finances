@@ -1,7 +1,6 @@
 import { db } from ".";
-import { gameNights, expenses, ledgerEntries, payrollEntries } from "./schema";
+import { gameNights, expenses, ledgerEntries, payrollEntries, appConfig } from "./schema";
 import { eq, desc, asc, sql, and, gte, lte, sum } from "drizzle-orm";
-import { KAM_NIGHTLY_PAY } from "@/lib/constants";
 
 // ─── Game Nights ─────────────────────────────────────────────────────────────
 
@@ -52,7 +51,7 @@ export async function getGameNights(filters?: {
       ),
       weekNumber: getISOWeek(night.date),
       expenseTotal,
-      netProfit: rake - expenseTotal - KAM_NIGHTLY_PAY,
+      netProfit: rake - expenseTotal,
     };
   });
 }
@@ -235,6 +234,29 @@ export async function getWeeklyPnL() {
   return Array.from(weeklyMap.values()).sort(
     (a, b) => a.year * 100 + a.week - (b.year * 100 + b.week)
   );
+}
+
+// ─── App Config ─────────────────────────────────────────────────────────────
+
+export async function getAppConfig() {
+  const [config] = await db.select().from(appConfig).where(eq(appConfig.id, 1));
+  if (!config) {
+    const [newConfig] = await db
+      .insert(appConfig)
+      .values({ nightlyRent: "330" })
+      .returning();
+    return newConfig;
+  }
+  return config;
+}
+
+export async function updateAppConfig(nightlyRent: string) {
+  const [updated] = await db
+    .update(appConfig)
+    .set({ nightlyRent, updatedAt: new Date() })
+    .where(eq(appConfig.id, 1))
+    .returning();
+  return updated;
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────

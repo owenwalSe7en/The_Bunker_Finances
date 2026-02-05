@@ -11,7 +11,7 @@ export const gameNightSchema = z.object({
 
 export const expenseSchema = z.object({
   gameNightId: z.coerce.number().int().positive(),
-  category: z.enum(["in_game_food", "restock", "other"], {
+  category: z.enum(["in_game_food", "restock", "other", "rent"], {
     message: "Category is required",
   }),
   description: z.string().optional(),
@@ -27,6 +27,12 @@ export const ledgerEntrySchema = z.object({
   amount: z.coerce.number().positive("Amount must be positive"),
   paid: z.coerce.boolean().default(false),
   notes: z.string().optional(),
+});
+
+export const appConfigSchema = z.object({
+  nightlyRent: z.coerce
+    .number()
+    .min(0, "Nightly rent must be 0 or more"),
 });
 
 export const payrollEntrySchema = z.object({
