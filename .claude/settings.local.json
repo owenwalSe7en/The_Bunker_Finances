@@ -24,7 +24,10 @@
       "mcp__plugin_compound-engineering_context7__query-docs",
       "WebSearch",
       "WebFetch(domain:orm.drizzle.team)",
-      "Bash(git merge:*)"
+      "Bash(git merge:*)",
+      "Bash(curl:*)",
+      "Bash(git worktree remove:*)",
+      "Bash(git branch:*)"
     ]
   }
 }
