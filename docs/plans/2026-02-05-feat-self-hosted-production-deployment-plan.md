@@ -21,6 +21,66 @@ Deploy The Bunker Black Book to your Omakub PC as a production server, accessibl
               Next.js + cloudflared     Free SSL/TLS              Email-based Access
 ```
 
+## Current Status (2026-02-05)
+
+**Plan Status**: ✅ **REVIEWED & READY TO USE**
+
+This plan underwent comprehensive code review by three independent reviewers (DHH-style Rails reviewer, Kieran-style quality reviewer, and Simplicity reviewer). They identified 47 potential issues across critical, important, and minor categories.
+
+### Review Consensus
+
+All three reviewers agreed: **This plan over-engineers for a 5-user private poker tracker.** The deployment approach is sound, but many proposed "hardening" measures are unnecessary complexity for this use case.
+
+### What Was Fixed (Implemented)
+
+Three minimal critical fixes were applied to this plan:
+
+1. **✅ package.json build script** - Removed experimental `--turbopack` flag from production build (keeps stable webpack)
+2. **✅ systemd service type** - Changed from `Type=oneshot` to `Type=forking` (correct for `docker compose up -d`)
+3. **✅ docker-compose.yml** - Removed deprecated `version: '3.8'` field (not used in Docker Compose V2)
+
+### What Was NOT Implemented (Correctly Rejected)
+
+The following proposed enhancements were **intentionally excluded** as over-engineering:
+
+- ❌ **Connection pooling** - The `postgres` driver already pools connections automatically; no custom pooling needed
+- ❌ **Deep health checks** - Docker healthcheck is sufficient; testing database/auth from health endpoint is overkill
+- ❌ **CSRF protection middleware** - Next.js Server Actions have built-in CSRF protection; adding Origin/Referer validation would break OAuth flow
+- ❌ **Strict CSP with nonces** - Would break Radix UI (shadcn/ui) components; unnecessary for private app behind OAuth
+- ❌ **Comprehensive security headers** - Cloudflare Tunnel already provides HTTPS, HSTS, and edge security
+- ❌ **systemd resource limits** - This is the only app on a dedicated PC; no need for memory/CPU caps
+- ❌ **Extensive environment validation** - Next.js fails clearly on startup if env vars are wrong; pre-validation adds no value
+
+### Why This Approach is Correct
+
+**Threat Model**: This is a private poker finance tracker for 5-10 users (not concurrent), all authenticated via Google OAuth with email allowlist. It's not:
+- A public SaaS application
+- Handling untrusted user input
+- Processing payments or sensitive PII
+- Serving thousands of requests per second
+
+**Complexity Budget**: The app replaces an Excel spreadsheet. Adding layers like custom connection pooling, CSRF middleware, and strict CSP would create maintenance burden with zero security benefit.
+
+**Trust Defaults**: Modern tools have good defaults:
+- Next.js Server Actions have CSRF protection
+- postgres driver pools connections
+- Cloudflare Tunnel provides SSL/TLS and DDoS protection
+- Docker has reasonable security defaults
+- Supabase Auth handles OAuth security
+
+### Current State of This Plan
+
+**Status**: This plan is ready to execute as-written. All configuration examples (Dockerfile, docker-compose.yml, systemd service) have been corrected with the three fixes above.
+
+**Next Steps**: Follow the three phases in order:
+1. **Phase 1** (Laptop): Create deployment files using corrected examples
+2. **Phase 2** (Laptop): Configure Cloudflare Tunnel and Google OAuth
+3. **Phase 3** (PC): Transfer files, run setup script, deploy
+
+**No further changes needed** unless you encounter specific problems during deployment.
+
+---
+
 ## Problem Statement
 
 You want to:
