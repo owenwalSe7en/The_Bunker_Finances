@@ -23,7 +23,8 @@
       "WebFetch(domain:supabase.com)",
       "mcp__plugin_compound-engineering_context7__query-docs",
       "WebSearch",
-      "WebFetch(domain:orm.drizzle.team)"
+      "WebFetch(domain:orm.drizzle.team)",
+      "Bash(git merge:*)"
     ]
   }
 }
