@@ -28,7 +28,7 @@ const navItems = [
   { href: "/ledger", label: "The Books", icon: BookOpen },
   { href: "/payroll", label: "Payroll", icon: DollarSign },
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/settings", label: "Settings", icon: Settings },
+  { href: "/globals", label: "Globals", icon: Settings },
 ];
 
 function NavLinks({

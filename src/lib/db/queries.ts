@@ -1,6 +1,22 @@
 import { db } from ".";
-import { gameNights, expenses, ledgerEntries, payrollEntries, appConfig } from "./schema";
+import { gameNights, expenses, ledgerEntries, payrollEntries, appConfig, houses } from "./schema";
 import { eq, desc, asc, sql, and, gte, lte, sum } from "drizzle-orm";
+
+// ─── Houses ──────────────────────────────────────────────────────────────────
+
+export async function getHouses() {
+  return db.select().from(houses).orderBy(houses.owner);
+}
+
+export async function getHouseById(id: number) {
+  // Input validation (P2 Fix)
+  if (!Number.isInteger(id) || id <= 0) {
+    throw new Error("Invalid house ID: must be a positive integer");
+  }
+
+  const [house] = await db.select().from(houses).where(eq(houses.id, id));
+  return house ?? null;  // Consistent null handling (P2 Fix)
+}
 
 // ─── Game Nights ─────────────────────────────────────────────────────────────
 
@@ -22,8 +38,18 @@ export async function getGameNights(filters?: {
   const orderDir = filters?.dir === "asc" ? asc(orderCol) : desc(orderCol);
 
   const nights = await db
-    .select()
+    .select({
+      id: gameNights.id,
+      date: gameNights.date,
+      rakeCollected: gameNights.rakeCollected,
+      notes: gameNights.notes,
+      houseId: gameNights.houseId,
+      houseOwner: houses.owner,
+      createdAt: gameNights.createdAt,
+      updatedAt: gameNights.updatedAt,
+    })
     .from(gameNights)
+    .innerJoin(houses, eq(gameNights.houseId, houses.id))
     .where(conditions.length > 0 ? and(...conditions) : undefined)
     .orderBy(orderDir);
 

@@ -13,6 +13,13 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   createGameNight,
   updateGameNight,
   type ActionState,
@@ -20,17 +27,21 @@ import {
 import { toast } from "sonner";
 import { Plus, Pencil } from "lucide-react";
 import { useState } from "react";
+import { House } from "@/lib/db/schema";
 
 type GameNightFormProps = {
   mode: "create";
+  houses: House[];
 } | {
   mode: "edit";
   id: number;
-  defaultValues: { date: string; rakeCollected: number; notes: string | null };
+  houses: House[];
+  defaultValues: { date: string; rakeCollected: number; houseId: number; notes: string | null };
 };
 
 export function GameNightForm(props: GameNightFormProps) {
   const [open, setOpen] = useState(false);
+  const [houseId, setHouseId] = useState<string>("");
   const formRef = useRef<HTMLFormElement>(null);
 
   const action =
@@ -61,7 +72,16 @@ export function GameNightForm(props: GameNightFormProps) {
   const defaults =
     props.mode === "edit"
       ? props.defaultValues
-      : { date: "", rakeCollected: 0, notes: "" };
+      : { date: "", rakeCollected: 0, houseId: 0, notes: "" };
+
+  // Set default house ID when in edit mode
+  useEffect(() => {
+    if (props.mode === "edit" && open) {
+      setHouseId(props.defaultValues.houseId.toString());
+    } else if (!open) {
+      setHouseId("");
+    }
+  }, [props, open]);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -84,6 +104,31 @@ export function GameNightForm(props: GameNightFormProps) {
           </DialogTitle>
         </DialogHeader>
         <form ref={formRef} action={formAction} className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="houseId">House *</Label>
+            <input type="hidden" name="houseId" value={houseId} />
+            <Select value={houseId} onValueChange={setHouseId}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select a house..." />
+              </SelectTrigger>
+              <SelectContent>
+                {props.houses.length === 0 ? (
+                  <div className="p-2 text-sm text-muted-foreground">
+                    No houses available
+                  </div>
+                ) : (
+                  props.houses.map((house) => (
+                    <SelectItem key={house.id} value={house.id.toString()}>
+                      {house.owner} - {new Intl.NumberFormat("en-US", {
+                        style: "currency",
+                        currency: "USD",
+                      }).format(Number(house.nightlyRent))}
+                    </SelectItem>
+                  ))
+                )}
+              </SelectContent>
+            </Select>
+          </div>
           <div className="space-y-2">
             <Label htmlFor="date">Date</Label>
             <Input
@@ -115,13 +160,19 @@ export function GameNightForm(props: GameNightFormProps) {
               defaultValue={defaults.notes ?? ""}
             />
           </div>
-          <Button type="submit" className="w-full" disabled={pending}>
+          <Button type="submit" className="w-full" disabled={pending || props.houses.length === 0 || !houseId}>
             {pending
               ? "Saving..."
               : props.mode === "edit"
                 ? "Update"
                 : "Create"}
           </Button>
+          {props.houses.length === 0 && (
+            <p className="text-sm text-muted-foreground text-center">
+              Add a house in Globals before creating game nights
+            </p>
+          )}
+        </form>
         </form>
       </DialogContent>
     </Dialog>
