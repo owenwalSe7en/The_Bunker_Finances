@@ -27,7 +27,16 @@
       "Bash(git merge:*)",
       "Bash(curl:*)",
       "Bash(git worktree remove:*)",
-      "Bash(git branch:*)"
+      "Bash(git branch:*)",
+      "Bash(git rm:*)",
+      "Bash(npm run build:*)",
+      "Bash(dir:*)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:developers.cloudflare.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:docs.docker.com)",
+      "Bash(C:UserswallaprojectsThe_Bunker_FinancesIMPLEMENTATION_TODO.md << 'EOF'\n# Multi-House Rent Management - Implementation Checklist\n\n## Phase 0: Security Foundation\n- [ ] 0.1: Create authentication helper \\(`src/lib/auth/server-auth.ts`\\)\n- [ ] 0.2: Configure security headers \\(`next.config.js`\\)\n\n## Phase 1: Schema & Migration\n- [ ] 1.1: Update schema definition \\(`src/lib/db/schema.ts`\\)\n- [ ] 1.2: Create transactional migration script \\(`scripts/migrate-add-houses.ts`\\)\n- [ ] 1.3: Test migration on database copy\n- [ ] 1.4: Run migration on production\n\n## Phase 2: Query Layer\n- [ ] 2.1: Add minimal house queries to `src/lib/db/queries.ts`\n- [ ] 2.2: Update game night queries with JOIN\n\n## Phase 3: Validation\n- [ ] 3.1: Add house validation schema to `src/lib/validations.ts`\n- [ ] 3.2: Update game night validation schema\n\n## Phase 4: Server Actions\n- [ ] 4.1: Create house management actions \\(`src/app/\\(protected\\)/globals/actions.ts`\\)\n- [ ] 4.2: Update game night creation action with security fixes\n\n## Phase 5: UI Components\n- [ ] 5.1: Create Globals page \\(`src/app/\\(protected\\)/globals/page.tsx`\\)\n- [ ] 5.2: Create HouseCard component\n- [ ] 5.3: Create Add/Edit/Delete house dialogs\n- [ ] 5.4: Update GameNightForm with house selection\n\n## Phase 6: Navigation\n- [ ] 6.1: Update sidebar navigation\n- [ ] 6.2: Update page metadata\n\n## Phase 7: Testing & Verification\n- [ ] 7.1: Run security tests\n- [ ] 7.2: Verify migration results\n- [ ] 7.3: Run integration tests\n- [ ] 7.4: Test edge cases\n\n## Quality Gates\n- [ ] All tests passing\n- [ ] No console errors\n- [ ] Security headers verified\n- [ ] Authentication working on all actions\n- [ ] Migration verified with SQL queries\nEOF)",
+      "Bash(npx tsx:*)"
     ]
   }
 }
