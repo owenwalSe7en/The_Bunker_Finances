@@ -5,7 +5,25 @@
       "Bash(ls -la \"C:\\\\Users\\\\walla\\\\projects\\\\The_Bunker_Finances\\\\docs\"\" 2>&1 || echo \"docs directory not found \")",
       "Bash(git checkout:*)",
       "Bash(npx drizzle-kit push:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git push:*)",
+      "Bash(gh:*)",
+      "Bash(cmd.exe /c \"where gh\")",
+      "Bash(cmd.exe /c \"gh --version\")",
+      "Bash(\"/c/Program Files/GitHub CLI/gh.exe\" auth status)",
+      "Bash(\"/c/Program Files/GitHub CLI/gh.exe\" pr create --title \"chore: owen-laptop local dev setup\" --body \"$\\(cat <<''EOF''\n## Summary\n- Upgrade Next.js, React, and related packages to latest versions\n- Add `.claude/` settings for local Claude Code workflow\n- Keep `.env.local.example` with placeholder values \\(no credentials exposed\\)\n\n## Test plan\n- [ ] Verify `npm install` completes without errors\n- [ ] Verify `npm run dev` starts successfully\n- [ ] Verify no real credentials are committed\n\n🤖 Generated with [Claude Code]\\(https://claude.com/claude-code\\)\nEOF\n\\)\")",
+      "Bash(ls:*)",
+      "Bash(git commit:*)",
+      "Bash(npx next build)",
+      "Bash(\"/c/Program Files/GitHub CLI/gh.exe\" auth setup-git)",
+      "Bash(\"/c/Program Files/GitHub CLI/gh.exe\" pr edit 1 --title \"feat: add settings table for rent and improve week labels\" --body \"$\\(cat <<''EOF''\n## Summary\n- **App Config table** — replaces hardcoded `KAM_NIGHTLY_PAY` constant with a database-backed `app_config` table \\(single-row, typed `nightly_rent` column\\)\n- **Auto rent expense** — game night creation now uses `db.transaction\\(\\)` to atomically insert both the game night and a rent expense\n- **Settings page** — new `/settings` route to view/edit nightly rent with dialog modal\n- **Date range week labels** — chart shows \"Jan 27 – Feb 2\" instead of \"W5\"; dashboard \"This Week\" card shows date range\n- **Angled chart labels** — x-axis labels rotated -45 degrees for readability\n- **Backfill script** — `scripts/backfill-rent.ts` for existing game nights \\(idempotent, safe to run multiple times\\)\n\n## Key Decisions\n- Single-row config table \\(not key-value\\) for type safety\n- Transaction wrapping for data integrity on game night creation\n- `getAppConfig\\(\\)` auto-seeds default if row missing — app never crashes from missing config\n\n## Post-Deploy Steps\n1. `npx drizzle-kit push --force` — create `app_config` table\n2. `npx tsx scripts/backfill-rent.ts` — backfill rent expenses for existing game nights\n\n## Testing\n- [x] `npx next build` passes clean\n- [ ] Manual: create game night, verify rent expense appears\n- [ ] Manual: edit nightly rent in Settings, create new game night with updated amount\n- [ ] Manual: verify dashboard chart shows date range labels\n\n🤖 Generated with [Claude Code]\\(https://claude.com/claude-code\\)\nEOF\n\\)\")",
+      "Bash(bash:*)",
+      "Bash(node -e:*)",
+      "mcp__plugin_compound-engineering_context7__resolve-library-id",
+      "WebFetch(domain:supabase.com)",
+      "mcp__plugin_compound-engineering_context7__query-docs",
+      "WebSearch",
+      "WebFetch(domain:orm.drizzle.team)"
     ]
   }
 }
