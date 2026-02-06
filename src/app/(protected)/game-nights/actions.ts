@@ -2,8 +2,9 @@
 
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
-import { gameNights, expenses, appConfig } from "@/lib/db/schema";
+import { gameNights, expenses, appConfig, houses } from "@/lib/db/schema";
 import { gameNightSchema, expenseSchema } from "@/lib/validations";
+import { verifyAuth } from "@/lib/auth/server-auth";
 import { eq } from "drizzle-orm";
 
 export type ActionState = {
@@ -17,11 +18,29 @@ export async function createGameNight(
   _prev: ActionState,
   formData: FormData
 ): Promise<ActionState> {
+  // AUTHENTICATION CHECK (P1 Critical Fix)
+  try {
+    await verifyAuth();
+  } catch (error) {
+    return { error: error instanceof Error ? error.message : "Unauthorized" };
+  }
+
   const parsed = gameNightSchema.safeParse(Object.fromEntries(formData));
   if (!parsed.success) {
     return { error: parsed.error.issues[0].message };
   }
 
+  // VALIDATE HOUSE BEFORE TRANSACTION (P1 Race Condition Fix)
+  const [house] = await db
+    .select()
+    .from(houses)
+    .where(eq(houses.id, parsed.data.houseId));
+
+  if (!house) {
+    return { error: "Selected house not found" };
+  }
+
+  // Now start transaction with validated house data
   try {
     await db.transaction(async (tx) => {
       const [gameNight] = await tx
@@ -29,35 +48,33 @@ export async function createGameNight(
         .values({
           date: parsed.data.date,
           rakeCollected: String(parsed.data.rakeCollected),
+          houseId: parsed.data.houseId,
           notes: parsed.data.notes || null,
         })
         .returning();
 
-      // Auto-insert rent expense using current config
-      const [config] = await tx
-        .select()
-        .from(appConfig)
-        .where(eq(appConfig.id, 1));
-
-      if (!config) {
-        throw new Error("App config not found. Please set up nightly rent in Settings.");
-      }
-
+      // Auto-create rent expense using pre-validated house data
       await tx.insert(expenses).values({
         gameNightId: gameNight.id,
         category: "rent",
-        description: "Nightly rent (Kam)",
-        amount: config.nightlyRent,
+        description: `Nightly rent (${house.owner})`,
+        amount: house.nightlyRent,
       });
     });
   } catch (e: unknown) {
-    if (e instanceof Error && e.message.includes("unique")) {
-      return { error: "A game night already exists for that date." };
+    console.error("[createGameNight] Database error:", e);
+
+    // Specific error handling (P2 Fix)
+    if (e && typeof e === 'object' && 'code' in e) {
+      if (e.code === "23505") {  // Unique violation
+        return { error: "A game night already exists for this date" };
+      }
+      if (e.code === "23503") {  // Foreign key violation
+        return { error: "Selected house no longer exists" };
+      }
     }
-    if (e instanceof Error && e.message.includes("App config not found")) {
-      return { error: e.message };
-    }
-    return { error: "Failed to create game night." };
+
+    return { error: "Failed to create game night. Please try again." };
   }
 
   revalidatePath("/game-nights");

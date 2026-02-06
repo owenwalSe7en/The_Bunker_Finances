@@ -1,4 +1,4 @@
-import { getGameNights, getAllExpensesGrouped } from "@/lib/db/queries";
+import { getGameNights, getAllExpensesGrouped, getHouses } from "@/lib/db/queries";
 import {
   Table,
   TableBody,
@@ -28,9 +28,10 @@ export default async function GameNightsPage({
   const endDate = typeof params.endDate === "string" ? params.endDate : undefined;
   const dir = params.dir === "asc" ? "asc" : "desc";
 
-  const [nights, expenseMap] = await Promise.all([
+  const [nights, expenseMap, houses] = await Promise.all([
     getGameNights({ startDate, endDate, dir }),
     getAllExpensesGrouped(),
+    getHouses(),
   ]);
 
   const totalRake = nights.reduce((s, n) => s + Number(n.rakeCollected), 0);
@@ -46,7 +47,7 @@ export default async function GameNightsPage({
             {nights.length} night{nights.length !== 1 ? "s" : ""} recorded
           </p>
         </div>
-        <GameNightForm mode="create" />
+        <GameNightForm mode="create" houses={houses} />
       </div>
 
       {nights.length === 0 ? (
@@ -83,9 +84,11 @@ export default async function GameNightsPage({
                   <GameNightForm
                     mode="edit"
                     id={night.id}
+                    houses={houses}
                     defaultValues={{
                       date: night.date,
                       rakeCollected: Number(night.rakeCollected),
+                      houseId: night.houseId,
                       notes: night.notes,
                     }}
                   />

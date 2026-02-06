@@ -9,12 +9,26 @@ import {
   timestamp,
 } from "drizzle-orm/pg-core";
 
+// ─── Houses ──────────────────────────────────────────────────────────────────
+
+export const houses = pgTable("houses", {
+  id: serial("id").primaryKey(),
+  owner: text("owner").notNull().unique(),
+  nightlyRent: numeric("nightly_rent", { precision: 10, scale: 2 }).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+// ─── Game Nights ─────────────────────────────────────────────────────────────
+
 export const gameNights = pgTable("game_nights", {
   id: serial("id").primaryKey(),
   date: date("date").notNull().unique(),
   rakeCollected: numeric("rake_collected", { precision: 10, scale: 2 })
     .notNull()
     .default("0"),
+  houseId: integer("house_id")
+    .notNull()
+    .references(() => houses.id, { onDelete: "restrict" }),
   notes: text("notes"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
@@ -65,6 +79,8 @@ export const appConfig = pgTable("app_config", {
 });
 
 // Type exports
+export type House = typeof houses.$inferSelect;
+export type NewHouse = typeof houses.$inferInsert;
 export type GameNight = typeof gameNights.$inferSelect;
 export type NewGameNight = typeof gameNights.$inferInsert;
 export type Expense = typeof expenses.$inferSelect;
