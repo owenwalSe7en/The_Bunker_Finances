@@ -1,11 +1,29 @@
 import { z } from "zod";
 
+export const houseSchema = z.object({
+  owner: z.string()
+    .min(1, "Owner name is required")
+    .max(50, "Owner name too long")
+    .regex(/^[a-zA-Z\s\-']+$/, "Owner name contains invalid characters"),
+  nightlyRent: z.coerce
+    .number()
+    .min(1, "Rent must be at least $1")
+    .max(10000, "Rent cannot exceed $10,000")
+    .multipleOf(0.01, "Rent must be a valid dollar amount"),
+});
+
+export type HouseFormData = z.infer<typeof houseSchema>;
+
 export const gameNightSchema = z.object({
   date: z.string().min(1, "Date is required"),
   rakeCollected: z.coerce
     .number()
     .min(0, "Rake must be 0 or more")
     .default(0),
+  houseId: z.coerce
+    .number()
+    .int("House ID must be an integer")
+    .positive("House selection is required"),
   notes: z.string().optional(),
 });
 
